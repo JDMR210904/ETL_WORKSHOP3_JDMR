@@ -1,0 +1,21 @@
+# Entornos virtuales
+.etl/
+.venv/
+venv/
+env/
+
+# Configuración sensible
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Datos locales / artefactos pesados
+data/
+artifacts/
+*.log
+
+# Editor
+.vscode/
+.idea/
