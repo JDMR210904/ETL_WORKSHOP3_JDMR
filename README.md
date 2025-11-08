@@ -33,10 +33,9 @@ Workshop3_starter/
 ├─ requirements.txt
 ├─ .env                         # Environment variables (local only, not committed)
 └─ README.md
+Note: the Python virtual environment (.etl, .venv, etc.) and local data should not be pushed to GitHub.
 
-```
-## 2. Dataset Description
-
+2. Dataset Description
 The project uses yearly World Happiness-style datasets for:
 
 2015.csv to 2019.csv in data/data_raw/
@@ -60,8 +59,10 @@ Generates a unified, clean dataset: artifacts/dataset_unified.csv.
 This unified dataset becomes the single source of truth for training and streaming.
 
 3. Offline Pipeline (EDA + Training)
-
 Run the complete offline workflow:
+
+bash
+Copiar código
 python -m venv .venv
 # Windows
 . .venv/Scripts/Activate.ps1
@@ -71,8 +72,6 @@ python -m venv .venv
 pip install -r requirements.txt
 
 python src/run_offline_pipeline.py
-
-
 This script:
 
 Loads all raw CSVs (2015–2019).
@@ -104,9 +103,10 @@ artifacts/diag_y_pred_vs_y_true.png – diagnostic chart
 These artifacts are later reused by the streaming components.
 
 4. Environment Configuration (.env)
-
 Create a .env file in the project root:
 
+env
+Copiar código
 # Kafka
 KAFKA_BROKERS=localhost:9092
 KAFKA_TOPIC=workshop3.happiness
@@ -125,16 +125,15 @@ TEST_SIZE=0.30
 
 # Producer behavior
 SEND_ONLY_TEST=true
-
 Adjust values as needed.
 This allows producer & consumer to stay in sync with your offline training.
 
 5. Start Kafka with Docker
-
 To run Kafka and Zookeeper locally:
 
+bash
+Copiar código
 docker-compose up -d
-
 This will start:
 
 wk3-zookeeper on 2181
@@ -145,11 +144,11 @@ Ensure Docker is running before starting the streaming pipeline.
 
 6. Streaming Pipeline (Real-Time Inference)
 6.1. Run the Consumer (sink → SQLite)
-
 The consumer listens to the Kafka topic and writes predictions to SQLite:
 
+bash
+Copiar código
 python src/consumer.py
-
 It will:
 
 Load the trained model (model.pkl).
@@ -161,11 +160,11 @@ For each message (country + features + prediction), insert a row into:
 data/preds.db, table predictions.
 
 6.2. Run the Producer (source → Kafka)
-
 In another terminal (same venv activated):
 
+bash
+Copiar código
 python src/producer.py
-
 It will:
 
 Read dataset_unified.csv.
@@ -183,15 +182,15 @@ Once both are running, you have:
 End-to-end loop: clean data → trained model → live predictions over Kafka → stored in SQLite for analytics.
 
 7. Consuming Predictions from SQLite
-
 After running producer + consumer, you can inspect results, for example:
 
+bash
+Copiar código
 python
 >>> import sqlite3, pandas as pd
 >>> con = sqlite3.connect("data/preds.db")
 >>> df = pd.read_sql_query("SELECT * FROM predictions LIMIT 10", con)
 >>> df.head()
-
 You can connect data/preds.db directly from:
 
 Power BI
@@ -203,7 +202,6 @@ Looker Studio (via connector)
 Any analytics tool that supports SQLite.
 
 8. Technologies Used
-
 Python 3.11+
 
 Pandas, NumPy, Matplotlib
@@ -219,7 +217,6 @@ SQLite for lightweight storage
 This workshop is designed as a practical template to understand how offline ML, streaming, and analytics can work together in a simple but production-like architecture.
 
 9. How to Run Everything (Quick Start)
-
 Clone the repo.
 
 Create & activate virtual environment.
@@ -239,10 +236,8 @@ Run python src/producer.py
 Explore data/preds.db in your BI tool of choice.
 
 10. Notes
-
 Do not commit .env, local databases, or large raw data.
 
 The configuration values in .env must stay consistent with the offline pipeline.
 
 This repo is intentionally minimal but realistic, to be extended in future workshops (monitoring, CI/CD, model registry, etc.).
-
