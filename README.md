@@ -34,8 +34,8 @@ Workshop3_starter/
 ├─ .env                         # Environment variables (local only, not committed)
 └─ README.md
 
-
-2. Dataset Description
+```
+## 2. Dataset Description
 
 The project uses yearly World Happiness-style datasets for:
 
